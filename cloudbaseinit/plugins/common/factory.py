@@ -20,6 +20,7 @@ opts = [
     cfg.ListOpt(
         'plugins',
         default=[
+        'cloudbaseinit.plugins.freebsd.networkconfig.NetworkConfigPlugin',
         'cloudbaseinit.plugins.freebsd.sethostname.SetHostNamePlugin',
         'cloudbaseinit.plugins.freebsd.scramblerootpassword.ScrambleRootPassword',
         'cloudbaseinit.plugins.freebsd.createuser.CreateUserPlugin',
@@ -28,7 +29,7 @@ opts = [
         'cloudbaseinit.plugins.freebsd.sshpublickeys.'
         'SetUserSSHPublicKeysPlugin',
         #'cloudbaseinit.plugins.freebsd.extendvolumes.ExtendVolumesPlugin',
-        #'cloudbaseinit.plugins.freebsd.userdata.UserDataPlugin',
+        'cloudbaseinit.plugins.common.userdata.UserDataPlugin',
         ],
         help='List of enabled plugin classes, '
         'to executed in the provided order'),

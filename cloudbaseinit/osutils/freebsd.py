@@ -63,7 +63,7 @@ class FreeBSDUtils(base.BaseOSUtils):
         """
         if_list = subprocess.check_output(['ifconfig', '-l']).split(' ')
         # Filter out non-network interfaces
-        if_list = filter(lambda x: x.startswith(('pflog', 'lo', 'plip')), if_list)
+        if_list = filter(lambda x: not x.startswith(('pflog', 'lo', 'plip')), if_list)
         return if_list
 
     def set_static_network_config(self, adapter_name, address, netmask,
@@ -78,14 +78,19 @@ class FreeBSDUtils(base.BaseOSUtils):
 
         if_cmd = 'ifconfig ' + adapter_name + ' inet ' + address + ' netmask ' + netmask + ' broadcast ' + broadcast
         route_cmd = 'route add default ' + gateway
-        resolv_conf = ['domain ' + dnsdomain]
-        resolv_conf_file = os.popen('resolvconf -a vtnet0', 'w', 1)
+        resolv_conf = []
+        if dnsdomain:
+            resolv_conf.append('domain ' + dnsdomain)
+
+        resolvconf_cmd = 'resolvconf -a %s' % adapter_name
+        resolv_conf_file = subprocess.Popen(
+            resolvconf_cmd, shell=True, bufsize=1, stdin=subprocess.PIPE).stdin
         for i in dnsnameservers:
             resolv_conf.append('nameserver ' + i)
 
         subprocess.check_call(if_cmd, shell=True)
         subprocess.check_call(route_cmd, shell=True)
-        self._add_comment(resolv_conf_file);
+        self._add_comment(resolv_conf_file)
         for line in resolv_conf:
             resolv_conf_file.write(line + '\n')
         self._add_rc_conf({'ifconfig_' + adapter_name: 'inet ' + address + ' netmask ' + netmask + ' broadcast ' + broadcast,

@@ -35,21 +35,29 @@ class ClassloaderTest(unittest.TestCase):
     def _test_get_config_drive_manager(self, mock_load_class, platform):
         sys.platform = platform
 
-        if platform is not "win32":
-            self.assertRaises(NotImplementedError,
-                              factory.get_config_drive_manager)
-
-        else:
+        caught_notimplemented = False
+        try:
             response = factory.get_config_drive_manager()
+            self.assertIsNotNone(response)
+        except NotImplementedError:
+            caught_notimplemented = True
 
+        if platform == 'win32':
             mock_load_class.assert_called_once_with(
                 'cloudbaseinit.metadata.services.osconfigdrive.'
                 'windows.WindowsConfigDriveManager')
-
-            self.assertIsNotNone(response)
+        elif platform == 'freebsd10':
+            mock_load_class.assert_called_once_with(
+                'cloudbaseinit.metadata.services.osconfigdrive.'
+                'freebsd.FreeBSDConfigDriveManager')
+        else:
+            self.assertTrue(caught_notimplemented, 'NotImplementedError expected')
 
     def test_get_config_drive_manager(self):
         self._test_get_config_drive_manager(platform="win32")
 
     def test_get_config_drive_manager_exception(self):
         self._test_get_config_drive_manager(platform="other")
+
+    def test_get_config_drive_manager(self):
+        self._test_get_config_drive_manager(platform="freebsd10")
