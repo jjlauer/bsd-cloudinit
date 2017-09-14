@@ -26,10 +26,9 @@ opts = [
         'cloudbaseinit.plugins.freebsd.createuser.CreateUserPlugin',
         'cloudbaseinit.plugins.freebsd.setuserpassword.SetUserPasswordPlugin',
         'cloudbaseinit.plugins.freebsd.enlargeroot.EnlargeRoot',
-        'cloudbaseinit.plugins.freebsd.sshpublickeys.'
-        'SetUserSSHPublicKeysPlugin',
+        'cloudbaseinit.plugins.freebsd.sshpublickeys.SetUserSSHPublicKeysPlugin',
         #'cloudbaseinit.plugins.freebsd.extendvolumes.ExtendVolumesPlugin',
-        'cloudbaseinit.plugins.common.userdata.UserDataPlugin',
+        'cloudbaseinit.plugins.freebsd.userdata.UserDataPlugin'
         ],
         help='List of enabled plugin classes, '
         'to executed in the provided order'),
