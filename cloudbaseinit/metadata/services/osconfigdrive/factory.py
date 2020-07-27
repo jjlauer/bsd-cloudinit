@@ -18,4 +18,4 @@ from cloudbaseinit.utils import classloader
 
 def get_config_drive_manager():
 	cl = classloader.ClassLoader()
-    return cl.load_class('cloudbaseinit.metadata.services.osconfigdrive.freebsd.FreeBSDConfigDriveManager')()
+	return cl.load_class('cloudbaseinit.metadata.services.osconfigdrive.freebsd.FreeBSDConfigDriveManager')()
