@@ -16,6 +16,7 @@
 .ropeproject
 .tox
 .venv
+.testrepository
 AUTHORS
 Authors
 build-stamp

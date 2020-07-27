@@ -42,32 +42,12 @@ class NetworkConfigPlugin(base.BasePlugin):
         if not network_details:
             return (plugin_base.PLUGIN_EXECUTION_DONE, False)
 
-        if 'content_path' not in network_details:
-            return (base.PLUGIN_EXECUTION_DONE, False)
-
-        content_path = network_details['content_path']
-        content_name = content_path.rsplit('/', 1)[-1]
-        debian_network_conf = service.get_content(content_name)
-
-        LOG.debug('network config content:\n%s' % debian_network_conf)
-
-        # TODO(alexpilotti): implement a proper grammar
-        m = re.search(r'iface eth0 inet static\s+'
-                      r'address\s+(?P<address>[^\s]+)\s+'
-                      r'netmask\s+(?P<netmask>[^\s]+)\s+'
-                      r'broadcast\s+(?P<broadcast>[^\s]+)\s+'
-                      r'gateway\s+(?P<gateway>[^\s]+)\s+'
-                      r'dns\-nameservers\s+(?P<dnsnameservers>[^\r\n]+)\s+',
-                      debian_network_conf)
-        if not m:
-            raise exception.CloudbaseInitException(
-                "network_details format not recognized")
-
-        address = m.group('address')
-        netmask = m.group('netmask')
-        broadcast = m.group('broadcast')
-        gateway = m.group('gateway')
-        dnsnameservers = m.group('dnsnameservers').strip().split(' ')
+        address = network_details[0].address
+        netmask = network_details[0].netmask
+        broadcast = network_details[0].broadcast
+        gateway = network_details[0].gateway
+        dnsdomain = None
+        dnsnameservers = network_details[0].dnsnameservers
 
         osutils = osutils_factory.get_os_utils()
 
@@ -75,6 +55,7 @@ class NetworkConfigPlugin(base.BasePlugin):
         if not network_adapter_name:
             # Get the first available one
             available_adapters = osutils.get_network_adapters()
+            LOG.debug('available adapters: %s', available_adapters)
             if not len(available_adapters):
                 raise exception.CloudbaseInitException(
                     "No network adapter available")
@@ -84,6 +65,6 @@ class NetworkConfigPlugin(base.BasePlugin):
 
         reboot_required = osutils.set_static_network_config(
             network_adapter_name, address, netmask, broadcast,
-            gateway, dnsnameservers)
+            gateway, dnsdomain, dnsnameservers)
 
         return (base.PLUGIN_EXECUTION_DONE, reboot_required)
