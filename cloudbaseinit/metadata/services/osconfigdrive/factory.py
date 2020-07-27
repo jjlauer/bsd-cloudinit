@@ -16,23 +16,6 @@ import sys
 
 from cloudbaseinit.utils import classloader
 
-
 def get_config_drive_manager():
-    class_paths = {
-        'freebsd10': (
-            'cloudbaseinit.metadata.services.osconfigdrive.freebsd.'
-            'FreeBSDConfigDriveManager'
-        ),
-        'win32': (
-            'cloudbaseinit.metadata.services.osconfigdrive.windows.'
-            'WindowsConfigDriveManager'
-        ),
-    }
-
-    class_path = class_paths.get(sys.platform)
-    if not class_path:
-        raise NotImplementedError('ConfigDrive is not supported on '
-                                  'this platform: %s' % sys.platform)
-
-    cl = classloader.ClassLoader()
-    return cl.load_class(class_path)()
+	cl = classloader.ClassLoader()
+    return cl.load_class('cloudbaseinit.metadata.services.osconfigdrive.freebsd.FreeBSDConfigDriveManager')()
